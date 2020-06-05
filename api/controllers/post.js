@@ -23,5 +23,20 @@ const add = (data) => {
     });
   });
 };
+const remove = (id) => {
+  return new Promise((resolve, reject) => {
+    Post.findByIdAndDelete(id, (err, docs) => {
+      err ? reject({ message: "Removing Problem", err }) : resolve(docs);
+    });
+  });
+};
 
-module.exports = { add, getAll };
+const update = (id, data) => {
+  return new Promise((resolve, reject) => {
+    Post.findByIdAndUpdate(id, { ...data }, { new: true }, (err, docs) => {
+      err ? reject({ message: "Updating problem", err }) : resolve(docs);
+    });
+  });
+};
+
+module.exports = { add, getAll, remove, update };
