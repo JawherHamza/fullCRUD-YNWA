@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { TextField, Button, Select, MenuItem, InputLabel } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
-import Axios from "axios";
+import axios from "axios";
 
-export default function PostForm({ setPosts, posts, sections }) {
-  const [state, setState] = useState({ desc: "", phoneNumber: "", section: "", location: "" });
+export default function PostForm({ setPosts, posts, sections, section, post, isUpdate }) {
+  //init state with the attributes of the post onUpdate
+  const [state, setState] = useState({
+    desc: post && post.desc ? post.desc : "",
+    phoneNumber: post && post.phoneNumber ? post.phoneNumber : "",
+    section: post && post.section ? post.section : section,
+    location: post && post.location ? post.location : "",
+  });
 
   let handleChange = (evt) => {
     setState({
@@ -14,20 +20,33 @@ export default function PostForm({ setPosts, posts, sections }) {
   };
 
   //THIS IS NOT NEEDED AS WE'RE ADDING THE NEW ADDED POST TO OUR POSTS AFTER CREATION //=>>>> setPosts([...posts, res.data]) L:27
-
   // useEffect(() => {}, [posts]);
 
-  let addPost = (state) => {
-    Axios.post("http://localhost:8080/post", { ...state })
-      .then((res) => {
-        //simple solution to notify about the existing phone number
-        if (res.data.message) {
-          alert(res.data.message);
-        } else setPosts([...posts, res.data]);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  let submit = (state) => {
+    isUpdate == true
+      ? axios
+          .put("http://localhost:8080/post/" + post._id, { ...state })
+          .then((res) => {
+            //front refresh
+            let newPosts = posts.filter((el) => el._id != res.data._id);
+            newPosts.push(res.data);
+            console.log(newPosts);
+            setPosts(newPosts);
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+      : axios
+          .post("http://localhost:8080/post", { ...state })
+          .then((res) => {
+            //simple solution to notify about the existing phone number
+            if (res.data.message) {
+              alert(res.data.message);
+            } else setPosts([...posts, res.data]);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
   };
 
   return (
@@ -84,8 +103,8 @@ export default function PostForm({ setPosts, posts, sections }) {
       </Select>
       <br></br>
       <br></br>
-      <Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={() => addPost(state)}>
-        Save
+      <Button variant="contained" color="primary" size="small" startIcon={<SaveIcon />} onClick={() => submit(state)}>
+        {isUpdate ? "Update" : "Save"}
       </Button>
     </div>
   );

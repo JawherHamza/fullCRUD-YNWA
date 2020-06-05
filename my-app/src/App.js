@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import Main from "./components/Main";
 import Footer from "./components/Footer";
@@ -11,7 +11,7 @@ const sections = [
 ];
 
 function App() {
-  const [section, setSection] = useState("giver");
+  const [section, setSection] = useState("reciever");
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -24,8 +24,8 @@ function App() {
   return (
     <div style={{ margin: "0 18%" }}>
       <Header title="You'll Never walk alone" sections={sections} setSection={setSection}></Header>
-      <PostForm setPosts={setPosts} posts={posts} sections={sections}></PostForm>
-      <Main posts={posts} section={section}></Main>
+      <PostForm setPosts={setPosts} posts={posts} sections={sections} section={section}></PostForm>
+      <Main posts={posts} section={section} setPosts={setPosts} sections={sections}></Main>
       <Footer />
     </div>
   );
